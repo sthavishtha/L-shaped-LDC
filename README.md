@@ -7,7 +7,7 @@ Zou-He boundary condition on top moving wall
 and Bounce-back on remaining stationary walls
 
 Geometry of L-shaped cavity can be found in L-cavity_geo.pdf file in this repository.
-The aspect ratio is defined as : ![equation](http://www.sciweavers.org/tex2img.php?eq=AR%20%3D%20%5Cfrac%7BL%20-%20L_1%7D%7BL%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0), according to thge nomenclature as shown in the geometry. 
+The aspect ratio is defined as : ![equation](http://www.sciweavers.org/tex2img.php?eq=AR%20%3D%20%5Cfrac%7BL%20-%20L_1%7D%7BL%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0), according to the nomenclature as shown in the geometry. 
 
 Code modified from Jonas Latt's code cavity2d.m
 available at http://wiki.palabos.org/numerics:matlab_samples
