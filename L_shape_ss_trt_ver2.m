@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Code to compute flows in a single-sided L-shaped cavity
 % Using Lattice Boltzmann Technique (TRT) model
-% using a D2Q9 model
+% in a D2Q9 model
 % Boundary conditions used:
 % Zou-He boundary condition on top moving wall
 % Bounce-back on remaining stationary walls
@@ -13,49 +13,50 @@
 clear
 
 % GENERAL FLOW CONSTANTS 
-lx = 210; 
+lx = 210; %Grid size of the domain
 ly = 210; 
 
 uLid  = 0.2; % horizontal lid velocity 
 vLid  = 0;    % vertical lid velocity 
 Re    = 500;  % Reynolds number 
 nu    = uLid *lx / Re;     % kinematic viscosity 
-omega_s = 1. / (3*nu+1./2.); % relaxation parameter 
-omega_as = 8*(2-omega_s)/(8-omega_s);
-maxT  = 1e4; % total number of iterations 
-tPlot = 10;    % cycles for graphical output
-ar=0.2;
+omega_s = 1. / (3*nu+1./2.); % symmetrical relaxation parameter 
+omega_as = 8*(2-omega_s)/(8-omega_s); %anti-symmetrical relaxation parameter
+%maxT  = 1e4; % total number of iterations 
+%tPlot = 10;    % cycles for graphical output
+ar=0.2; %aspect ratio 
 
 % D2Q9 LATTICE CONSTANTS 
-t   = [4/9, 1/9,1/9,1/9,1/9, 1/36,1/36,1/36,1/36]; 
-cx  = [ 0, 1, 0, -1, 0, 1, -1, -1, 1]; 
+t   = [4/9, 1/9,1/9,1/9,1/9, 1/36,1/36,1/36,1/36]; %lattice weights
+cx  = [ 0, 1, 0, -1, 0, 1, -1, -1, 1];  %lattice directions
 cy  = [ 0, 0, 1, 0, -1, 1, 1, -1, -1]; 
 opp = [ 1, 4, 5, 2,  3, 8, 9,  6,  7]; 
-lid = [2: (lx-1)]; 
+lid = [2: (lx-1)]; %lid coordinates
 
 [y,x] = meshgrid(1:ly,1:lx); 
 obst = ones(lx,ly); 
 obst(lid,2:ly) = 0; 
-bbRegion = find(obst); 
+bbRegion = find(obst); %solid nodes to apply bounce back 
 obs=zeros(lx,ly);
 obs(1:(1-ar)*lx+1,(1-ar)*ly+1)=1.0;
 obs((1-ar)*lx+1,1:(1-ar)*ly+1)=1.0;
-region=find(obs);
+region=find(obs); %solid nodes on the corner to apply bounce-back (sim to obstacle)
 
 % INITIAL CONDITION: (rho=0, u=0) ==> fIn(i) = t(i) 
 fIn = reshape( t' * ones(1,lx*ly), 9, lx, ly); 
 
-err_max=1;
-iter=0;
+err_max=1; %to keep a track of error for convergence
+iter=0; %to keep a track of iterations 
 
 % MAIN LOOP (TIME CYCLES) 
-while err_max>1e-12
+while err_max>1e-12 %Convergence criteria
 
 % MACROSCOPIC VARIABLES 
 rho = sum(fIn); 
 ux_n = reshape ( (cx * reshape(fIn,9,lx*ly)), 1,lx,ly ) ./rho; 
 uy_n = reshape ( (cy * reshape(fIn,9,lx*ly)), 1,lx,ly ) ./rho; 
-ux_n(1,[1 lx],:)=0.0; uy_n(1,[1 lx],:)=0.0; 
+
+ux_n(1,[1 lx],:)=0.0; uy_n(1,[1 lx],:)=0.0; %dirichlet boundary conditions
 ux_n(1,:,1)=0.0; uy_n(1,:,1)=0.0;
 ux_n(1,:,ly)=uLid; uy_n(1,:,ly)=vLid;
 ux_n(region)=0.0; uy_n(region)=0.0;
@@ -122,6 +123,7 @@ end
 iter=iter+1;
 
 end 
+%Code for plotting streamlines in MATLAB
 [x,y]=meshgrid(1:lx,1:ly);
 streamslice((x-1)/(lx-1),(y-1)/(ly-1),squeeze(ux)',squeeze(uy)',10);
 grid on
